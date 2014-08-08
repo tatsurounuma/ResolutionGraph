@@ -26,6 +26,18 @@ d3.json("graph.json",function(error, json){
 	.append("line")
 	.attr("class","link")
 
+var tooltip = d3.select("body")
+	.append("div")
+	.style("position", "absolute")
+	.style("z-index", "10")
+	.style("visibility", "hidden")
+	.style("border", "1px solid #000")
+	.style("border-radius", "3px")
+	.style("background-color", "#333")
+	.style("color","#fff")
+	.style("font-size", "11px")
+	.style("opacity","0.8")
+
 	var node = svg.selectAll(".node")
 	.data(json[0].nodes)
 	.enter()
@@ -35,7 +47,11 @@ d3.json("graph.json",function(error, json){
 	.attr("r",function(d){
 		return Math.sqrt(d.value);
 	})
-	.call(force.drag);
+	.call(force.drag)
+	.on("mouseover", function(d){return tooltip.style("visibility", "visible").text(d.ResolutionNumber);})
+	.on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+	.on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+
 
 	force.on("tick", function() {
 		link.attr("x1", function(d) { return d.source.x; })
@@ -45,5 +61,6 @@ d3.json("graph.json",function(error, json){
 		node.attr("cx", function(d) { return d.x; })
 		.attr("cy", function(d) { return d.y; });
 	});
+
 
 });
